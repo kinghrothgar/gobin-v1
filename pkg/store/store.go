@@ -10,15 +10,13 @@ import (
 )
 
 type Writer struct {
-	EncryptKey string
-	writer     io.WriteCloser
-	closers    []io.WriteCloser
+	writer  io.WriteCloser
+	closers []io.WriteCloser
 }
 
 type Reader struct {
-	EncryptKey string
-	reader     io.ReadCloser
-	closers    []io.ReadCloser
+	reader  io.ReadCloser
+	closers []io.ReadCloser
 }
 
 // Object wraps google storage.ObjectHandle
@@ -93,6 +91,18 @@ func (obj *Object) Metadata(ctx context.Context) (map[string]string, error) {
 		return nil, err
 	}
 	return attrs.Metadata, nil
+}
+
+func (obj *Object) Exists(ctx context.Context) (bool, error) {
+	// TODO: doesn't seem like a easy way to check objects existance
+	_, err := obj.Attrs(ctx)
+	if err == storage.ErrObjectNotExist {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (obj *Object) UpdateMetadata(ctx context.Context, meta map[string]string) (map[string]string, error) {

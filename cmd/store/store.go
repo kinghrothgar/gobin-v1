@@ -20,6 +20,13 @@ var bucketName = "gobin-io-test"
 func test() {
 	ctx := context.Background()
 	obj, err := store.NewObject(ctx, bucketName, "data")
+	if err != nil {
+		log.Fatalf("failed to get new object: %v", err)
+	}
+	_, err = obj.Exists(ctx)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 	obj.Key("asdfasdfasdf", "saltsaltsalt")
 	w, err := obj.NewWriter(ctx)
 	if err != nil {
@@ -65,8 +72,8 @@ func test() {
 	} else {
 		log.Printf("metadata is %+v", meta)
 	}
-	//log.Println("deleting object")
-	//if err := obj.Delete(ctx); err != nil {
-	//	log.Fatalf("failed to delete object: %v", err)
-	//}
+	log.Println("deleting object")
+	if err := obj.Delete(ctx); err != nil {
+		log.Fatalf("failed to delete object: %v", err)
+	}
 }
